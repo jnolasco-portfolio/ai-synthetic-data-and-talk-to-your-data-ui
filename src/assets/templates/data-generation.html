@@ -1,0 +1,128 @@
+<!-- data-generation.html-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Assistant</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Google Font    -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Styles-->
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/milligram.refactored.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav aria-label="Main Features">
+      <header><h4>Data Assistant</h4></header>
+      <ul>
+        <li><a href="#data-generation">Data Generation</a></li>
+        <li><a href="#talk-to-data">Talk to your data</a></li>
+      </ul>
+    </nav>
+    <main>
+      <div class="container">
+        <form class="form-panel">
+          <div class="form-group">
+            <label for="prompt">Prompt</label>
+            <input
+              type="text"
+              name="prompt"
+              id="prompt"
+              placeholder="Enter your prompt here..."
+            />
+          </div>
+
+          <div class="upload-group">
+            <button type="button">Upload DDL Schema</button>
+            <span class="support-info">Supported formats: SQL.</span>
+          </div>
+
+          <hr />
+
+          <fieldset class="row">
+            <legend>Advanced Parameters</legend>
+
+            <div class="column column-50">
+              <label for="temperature">Temperature</label>
+              <input
+                type="range"
+                name="temperature"
+                id="temperature"
+                min="0"
+                max="1"
+                step="0.01"
+              />
+            </div>
+
+            <div class="column column-50">
+              <label for="max-tokens">Max Tokens</label>
+              <input
+                type="number"
+                name="max-tokens"
+                id="max-tokens"
+                value="100"
+              />
+            </div>
+          </fieldset>
+          <button type="submit">Generate</button>
+        </form>
+
+        <section class="form-panel">
+          <div class="row">
+            <label for="table" class="column column-60">Data Preview</label>
+            <select name="table" id="table" class="column column-40">
+              <option value="table1">Table 1</option>
+              <option value="table2">Table 2</option>
+              <option value="table3">Table 3</option>
+            </select>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>001</td>
+                <td>Sample Data 1</td>
+                <td>Category A</td>
+                <td>245.50</td>
+              </tr>
+              <tr>
+                <td>002</td>
+                <td>Sample Data 2</td>
+                <td>Category B</td>
+                <td>127.80</td>
+              </tr>
+              <tr>
+                <td>003</td>
+                <td>Sample Data 3</td>
+                <td>Category A</td>
+                <td>389.20</td>
+              </tr>
+            </tbody>
+          </table>
+          <form class="quick-instruction-form">
+            <input type="text" placeholder="Enter quick instructions..." />
+            <button type="submit">Submit</button>
+          </form>
+        </section>
+      </div>
+    </main>
+    <footer>Course: Prompt Engineering & AI Applications</footer>
+  </body>
+</html>

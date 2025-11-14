@@ -1,11 +1,8 @@
 const DataPreview = () => {
   return (
-    <>
-      <div className='flex mb-2'>
-        <label
-          htmlFor='table'
-          className='flex-3 text-gray-700 font-medium mb-1'
-        >
+    <section>
+      <div className='preview-selector-group'>
+        <label htmlFor='table' className='block'>
           Data Preview
         </label>
         <select name='table' id='table' className='flex-1'>
@@ -14,7 +11,11 @@ const DataPreview = () => {
           <option value='table3'>Table 3</option>
         </select>
       </div>
-      <table className='table-auto w-full text-left mb-2'>
+      <form>
+        <input type='text' placeholder='Enter quick instructions...' />
+        <button type='submit'>Submit</button>
+      </form>
+      <table>
         <thead>
           <tr>
             <th scope='col'>ID</th>
@@ -44,20 +45,7 @@ const DataPreview = () => {
           </tr>
         </tbody>
       </table>
-      <form className='flex justify-end gap-2'>
-        <input
-          type='text'
-          placeholder='Enter quick instructions...'
-          className='grow'
-        />
-        <button
-          type='submit'
-          className='px-4 py-2 bg-gray-800 text-white font-normal rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400'
-        >
-          Submit
-        </button>
-      </form>
-    </>
+    </section>
   );
 };
 

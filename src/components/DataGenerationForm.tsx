@@ -60,99 +60,73 @@ function DataGenerationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className='mb-3'>
-        <label
-          htmlFor='prompt'
-          className='block text-gray-700 font-medium mb-1'
-        >
-          Prompt
-        </label>
+      <div>
+        <label htmlFor='prompt'>Prompt</label>
         <input
           type='text'
           id='prompt'
           placeholder='Enter your prompt here...'
           {...register('prompt')}
-          className='w-full'
         />
         {errors.prompt && (
           <span className='error-message'>{errors.prompt.message}</span>
         )}
       </div>
 
-      <div className='mb-6'>
-        <label
-          htmlFor='schema-upload'
-          className='px-4 py-2 bg-gray-800 text-white font-normal rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400'
-        >
+      <div className='upload-schema-group'>
+        <label htmlFor='schema-upload' role='button'>
           Upload DDL Schema
         </label>
         <input
+          hidden
           type='file'
           id='schema-upload'
           accept='.sql,.txt,.ddl'
           className='sr-only'
           {...register('schemaUpload')}
         />
-
-        <span className='text-gray-500 text-sm px-2'>
-          Supported formats: SQL.
-        </span>
-        <span className='text-gray-500 text-sm px-2'>
+        <span>
           {schemaFile && schemaFile.length > 0
-            ? schemaFile[0].name
-            : 'No file selected'}
+            ? 'Selected file: ' + schemaFile[0].name
+            : 'Supported formats: SQL.'}
         </span>
       </div>
+      <div className='mb-1'></div>
+      <fieldset>
+        <legend>Advanced Parameters</legend>
 
-      <hr className='mb-2' />
+        <section className='advanced'>
+          <div>
+            <label htmlFor='temperature'>Temperature</label>
+            <input
+              type='range'
+              id='temperature'
+              min='0'
+              max='1'
+              step='0.01'
+              {...register('temperature', { valueAsNumber: true })}
+            />
+            {errors.temperature && (
+              <span className='error-message'>
+                {errors.temperature.message}
+              </span>
+            )}
+          </div>
 
-      <fieldset className='flex gap-4'>
-        <legend className='mb-2'>Advanced Parameters</legend>
-
-        <div className='flex-1'>
-          <label
-            htmlFor='temperature'
-            className='block text-gray-700 font-medium mb-1'
-          >
-            Temperature
-          </label>
-          <input
-            className='w-full'
-            type='range'
-            id='temperature'
-            min='0'
-            max='1'
-            step='0.01'
-            {...register('temperature', { valueAsNumber: true })}
-          />
-          {errors.temperature && (
-            <span className='error-message'>{errors.temperature.message}</span>
-          )}
-        </div>
-
-        <div className='flex-1'>
-          <label
-            htmlFor='max-tokens'
-            className='block text-gray-700 font-medium mb-1'
-          >
-            Max Tokens
-          </label>
-          <input
-            type='number'
-            id='max-tokens'
-            {...register('maxRows', { valueAsNumber: true })}
-            className='w-full'
-          />
-          {errors.maxRows && (
-            <span className='error-message'>{errors.maxRows.message}</span>
-          )}
-        </div>
+          <div>
+            <label htmlFor='max-tokens'>Max Tokens</label>
+            <input
+              type='number'
+              id='max-tokens'
+              {...register('maxRows', { valueAsNumber: true })}
+            />
+            {errors.maxRows && (
+              <span className='error-message'>{errors.maxRows.message}</span>
+            )}
+          </div>
+        </section>
       </fieldset>
-      <button
-        type='submit'
-        className='px-4 py-2 bg-gray-800 text-white font-normal rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400'
-        disabled={isPending}
-      >
+      <button type='submit' disabled={isPending}>
         {isPending ? 'Generating...' : 'Generate'}
       </button>
     </form>

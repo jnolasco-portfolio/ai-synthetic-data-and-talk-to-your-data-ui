@@ -31,27 +31,22 @@ export const Sidebar = () => {
   const isTalkToDataActive = currentPath === '/chat';
 
   return (
-    // Sidebar Container: Dark background (gray-900)
-    <div className='bg-gray-900 p-6 flex flex-col gap-8 h-full border-r border-gray-700'>
-      {/* Header text should be white on the dark background */}
+    <nav className='aside'>
       <header>
-        <h1 className='text-2xl font-bold text-white'>Data Assistant</h1>
+        <h4>Data Assistant</h4>
       </header>
-
-      <nav aria-label='Main Features'>
-        <ul className='flex flex-col gap-2'>
-          <li>
-            <NavLink to='/generate' isActive={isDataGenerationActive}>
-              Data Generation
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to='/chat' isActive={isTalkToDataActive}>
-              Talk to your data
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-    </div>
+      <ul>
+        <li>
+          <NavLink to='/generate' isActive={isDataGenerationActive}>
+            Data Generation
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to='/chat' isActive={isTalkToDataActive}>
+            Talk to your data
+          </NavLink>
+        </li>
+      </ul>
+    </nav>
   );
 };

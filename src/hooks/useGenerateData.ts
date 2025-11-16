@@ -3,17 +3,18 @@ import { axiosInstance } from '../api/api';
 import {
   generateDataResponseSchema,
   type GenerateDataResponse,
-} from '../schemas/generateDataSchema';
+} from '../schemas/generateDataResponse';
+import { type GenerateDataRequest } from '../schemas/generateDataRequest';
 
 const fetchGenerateData = async (
-  formData: FormData
+  request: GenerateDataRequest
 ): Promise<GenerateDataResponse> => {
   const { data } = await axiosInstance.post<GenerateDataResponse>(
-    '/generate-data',
-    formData,
+    '/generate',
+    request,
     {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
     }
   );

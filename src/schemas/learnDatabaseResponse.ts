@@ -35,14 +35,10 @@ const tableSchema = z.object({
   indexes: z.array(indexSchema),
 });
 
-const schemaData = z.object({
+export const learnDatabaseResponseSchema = z.object({
   server: z.string(),
   database: z.string(),
   tables: z.array(tableSchema),
 });
 
-export const learnSchemaResponseSchema = z.object({
-  schema: schemaData,
-});
-
-export type LearnSchemaResponse = z.infer<typeof learnSchemaResponseSchema>;
+export type LearnDatabaseResponse = z.infer<typeof learnDatabaseResponseSchema>;

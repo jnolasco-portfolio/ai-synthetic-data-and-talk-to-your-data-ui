@@ -12,7 +12,11 @@ const DataPreview = () => {
         </select>
       </div>
       <form>
-        <input type='text' placeholder='Enter quick instructions...' />
+        <input
+          type='text'
+          id='instructions'
+          placeholder='Enter quick instructions...'
+        />
         <button type='submit'>Submit</button>
       </form>
       <table>

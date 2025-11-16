@@ -1,9 +1,10 @@
 
 import { z } from 'zod';
+import { learnDatabaseResponseSchema } from './learnDatabaseResponse';
 
 export const generateDataResponseSchema = z.object({
-  tableName: z.string().nonempty(),
-  data: z.array(z.string()).min(1),
+  schema: learnDatabaseResponseSchema,
+  data: z.record(z.string(), z.array(z.string())),
 });
 
 export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;

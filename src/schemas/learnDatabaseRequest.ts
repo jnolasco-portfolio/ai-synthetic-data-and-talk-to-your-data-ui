@@ -43,4 +43,3 @@ export const learnDatabaseRequestSchema = z
     }
   });
 
-export type LearnDatabaseRequest = z.infer<typeof learnDatabaseRequestSchema>;

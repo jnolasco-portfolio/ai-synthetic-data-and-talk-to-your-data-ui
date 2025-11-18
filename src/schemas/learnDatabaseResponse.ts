@@ -41,4 +41,4 @@ export const learnDatabaseResponseSchema = z.object({
   tables: z.array(tableSchema),
 });
 
-export type LearnDatabaseResponse = z.infer<typeof learnDatabaseResponseSchema>;
+

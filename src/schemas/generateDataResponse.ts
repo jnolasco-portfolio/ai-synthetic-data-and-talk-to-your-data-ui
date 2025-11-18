@@ -7,4 +7,4 @@ export const generateDataResponseSchema = z.object({
   data: z.record(z.string(), z.array(z.string())),
 });
 
-export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;
+

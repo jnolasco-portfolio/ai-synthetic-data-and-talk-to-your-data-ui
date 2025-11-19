@@ -12,9 +12,12 @@ export type LearnDatabaseResponse = z.infer<typeof learnDatabaseResponseSchema>;
 
 class DataGenerationService {
 
-  postLearnSchemaClient = async (
+  /**
+     * Retrieve the JSON representation of database learnings.
+     */
+  async fetchDatabaseLearnings(
     formData: FormData
-  ): Promise<LearnDatabaseResponse> => {
+  ): Promise<LearnDatabaseResponse> {
     const { data } = await httpClient.post<LearnDatabaseResponse>(
       '/learn',
       formData,
@@ -25,21 +28,17 @@ class DataGenerationService {
       }
     );
 
-    const validationResult = learnDatabaseResponseSchema.safeParse(data);
-
-    if (!validationResult.success) {
-      // Log the error and throw to be caught by React Query
-      console.error('API Response Validation Error:', validationResult.error);
+    const result = learnDatabaseResponseSchema.safeParse(data);
+    if (!result.success) {
+      console.error('API Response Validation Error:', result.error);
       throw new Error('Invalid data received from the server.');
     }
-
-    return validationResult.data;
-  };
-
+    return result.data;
+  }
   // fetchGenerateData
-  fetchGenerateData = async (
+  async fetchGeneratedData(
     request: GenerateDataRequest
-  ): Promise<GenerateDataResponse> => {
+  ): Promise<GenerateDataResponse> {
     const { data } = await httpClient.post<GenerateDataResponse>(
       '/generate',
       request,

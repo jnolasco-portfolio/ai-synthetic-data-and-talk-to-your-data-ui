@@ -77,11 +77,9 @@ export const DataGenerationScreen = () => {
     console.log('Initiating schema learning...');
     const formData = new FormData();
     formData.append('conversationId', request.conversationId);
-    if (request.parameters.prompt) {
-      formData.append('prompt', request.parameters.prompt);
-    }
-    formData.append('temperature', request.parameters.temperature.toString());
-    formData.append('maxRows', request.parameters.maxRows.toString());
+
+    // Bundle parameters into a single JSON string as per the API contract
+    formData.append('parameters', JSON.stringify(request.parameters));
 
     if (request.schemaUpload && request.schemaUpload.length > 0) {
       const file = request.schemaUpload[0];

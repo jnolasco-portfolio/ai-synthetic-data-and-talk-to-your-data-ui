@@ -124,7 +124,10 @@ function DataGenerationForm({
           </div>
         </section>
       </fieldset>
-      <button type='submit' disabled={isGenerating}>
+      <button
+        type='submit'
+        disabled={isGenerating || !schemaFile || schemaFile.length === 0}
+      >
         {isGenerating ? 'Generating...' : 'Generate'}
       </button>
       <span>{/*console.log('Current errors:', errors)*/}</span>{' '}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useLearnDatabase } from '../hooks/useLearnDatabase';
 import { useGenerateData } from '../hooks/useGenerateData';
+import { useLearnDatabase } from '../hooks/useLearnDatabase';
 import type {
   LearnDatabaseRequest,
   LearnDatabaseResponse,
@@ -19,6 +19,8 @@ export const DataGenerationScreen = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   // State to track the name of the table currently being generated
   const [currentTable, setCurrentTable] = useState<string | null>(null);
+  // State to track the progress of the initial generation
+  const [progress, setProgress] = useState(0);
 
   // React Query hooks for our API calls
   const learnDatabase = useLearnDatabase();
@@ -41,7 +43,7 @@ export const DataGenerationScreen = () => {
         const allGeneratedData: Record<string, string[]> = {};
 
         // Loop through each table defined in the schema
-        for (const table of schema.tables) {
+        for (const [index, table] of schema.tables.entries()) {
           try {
             console.log(`Generating data for table: ${table.name}`);
             setCurrentTable(table.name); // Set the current table name for the UI
@@ -58,6 +60,10 @@ export const DataGenerationScreen = () => {
             if (response) {
               allGeneratedData[response.tableName] = response.data;
             }
+
+            // Update progress
+            const percentComplete = ((index + 1) / schema.tables.length) * 100;
+            setProgress(percentComplete);
           } catch (error) {
             console.error(
               `Error generating data for table ${table.name}:`,
@@ -70,6 +76,7 @@ export const DataGenerationScreen = () => {
         setGeneratedData(allGeneratedData);
         setIsGenerating(false);
         setCurrentTable(null); // Reset after completion
+        setProgress(0); // Reset progress
       };
 
       generateDataForTables();
@@ -95,6 +102,43 @@ export const DataGenerationScreen = () => {
     learnDatabase.mutate(formData);
   };
 
+  // This function is called when the user submits the refinement form
+  const handleRefine = async ({
+    tableName,
+    instructions,
+  }: {
+    tableName: string;
+    instructions: string;
+  }) => {
+    if (!schema) return;
+
+    console.log(`Refining data for table: ${tableName}...`);
+    setIsGenerating(true); // Show loading state
+    setCurrentTable(tableName);
+
+    try {
+      const response = await generateData.mutateAsync({
+        conversationId: '12345', // This can be dynamic later
+        tableName,
+        instructions,
+        maxRows: 10, // Or get this from form state
+        schema,
+      });
+
+      // Update the state with the new data for the specific table
+      setGeneratedData((prevData) => ({
+        ...prevData,
+        [response.tableName]: response.data,
+      }));
+    } catch (error) {
+      console.error(`Error refining data for table ${tableName}:`, error);
+    } finally {
+      setIsGenerating(false); // Hide loading state
+      setCurrentTable(null);
+      // No need to reset progress here, as it's not used for single refinements
+    }
+  };
+
   // Combine loading states for the UI
   const isLoading = learnDatabase.isPending || isGenerating;
 
@@ -117,7 +161,10 @@ export const DataGenerationScreen = () => {
 
         {/* Show a specific message during data generation for each table */}
         {isGenerating && currentTable && (
-          <span aria-busy='true'>Generating data for {currentTable}...</span>
+          <div aria-busy='true'>
+            Generating data for {currentTable}...
+            <progress value={progress} max='100'></progress>
+          </div>
         )}
 
         {learnDatabase.error && (
@@ -132,6 +179,7 @@ export const DataGenerationScreen = () => {
           schema={schema}
           generatedData={generatedData}
           isDisabled={isLoading}
+          onRefine={handleRefine}
         />
       </section>
     </>

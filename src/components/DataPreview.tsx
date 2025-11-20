@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import type { LearnDatabaseResponse } from '../services/dataGenerationService';
+import QuickInstructionForm from './QuickInstructionForm';
 
 interface DataPreviewProps {
   schema: LearnDatabaseResponse | null;
   generatedData: Record<string, string[]>;
+  onRefine: (args: {
+    tableName: string;
+    instructions: string;
+  }) => Promise<void>;
   isDisabled?: boolean;
 }
 
@@ -11,6 +16,7 @@ const DataPreview = ({
   schema,
   generatedData,
   isDisabled = false,
+  onRefine,
 }: DataPreviewProps) => {
   // State to keep track of the currently selected table name
   const [selectedTable, setSelectedTable] = useState<string>('');
@@ -51,17 +57,12 @@ const DataPreview = ({
         </select>
       </div>
 
-      <form>
-        <input
-          type='text'
-          id='instructions'
-          placeholder='Enter quick instructions...'
-          disabled={isDisabled || !selectedTable}
-        />
-        <button type='submit' disabled={isDisabled || !selectedTable}>
-          Submit
-        </button>
-      </form>
+      <QuickInstructionForm
+        isDisabled={isDisabled || !selectedTable}
+        onSubmit={(instructions) =>
+          onRefine({ tableName: selectedTable, instructions })
+        }
+      />
 
       {!schema && !isDisabled && (
         <p>Upload a schema and generate data to see the preview.</p>

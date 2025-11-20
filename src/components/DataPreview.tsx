@@ -13,6 +13,8 @@ interface DataPreviewProps {
   isDisabled?: boolean;
 }
 
+const COLUMN_SEPARATOR = '|';
+
 const DataPreview = ({
   schema,
   generatedData,
@@ -118,7 +120,7 @@ const DataPreview = ({
           <tbody>
             {dataToDisplay.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {row.split(',').map((cell, cellIndex) => (
+                {row.split(COLUMN_SEPARATOR).map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}
               </tr>

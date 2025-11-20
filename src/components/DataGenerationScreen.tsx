@@ -7,6 +7,7 @@ import type {
 } from '../services/dataGenerationService';
 import DataGenerationForm from './DataGenerationForm';
 import DataPreview from './DataPreview';
+import LoadingOverlay from './LoadingOverlay';
 
 export const DataGenerationScreen = () => {
   // State to hold the schema structure from the /learn endpoint
@@ -153,20 +154,18 @@ export const DataGenerationScreen = () => {
 
       <hr />
 
+      {isLoading && (
+        <LoadingOverlay
+          message={
+            learnDatabase.isPending
+              ? 'Learning schema...'
+              : `Generating data for ${currentTable}...`
+          }
+          progress={progress}
+        />
+      )}
+
       <section className='datapreview'>
-        {/* Show a generic loading message during schema learning */}
-        {learnDatabase.isPending && (
-          <span aria-busy='true'>Learning schema...</span>
-        )}
-
-        {/* Show a specific message during data generation for each table */}
-        {isGenerating && currentTable && (
-          <div aria-busy='true'>
-            Generating data for {currentTable}...
-            <progress value={progress} max='100'></progress>
-          </div>
-        )}
-
         {learnDatabase.error && (
           <div className='error-message'>
             Error: {learnDatabase.error.message}

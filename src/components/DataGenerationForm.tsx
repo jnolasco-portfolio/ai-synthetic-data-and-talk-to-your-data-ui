@@ -32,6 +32,7 @@ function DataGenerationForm({
   });
 
   const schemaFile = watch('schemaUpload');
+  const temperatureValue = watch('parameters.temperature');
 
   useEffect(() => {
     if (schemaFile && schemaFile.length > 0) {
@@ -91,17 +92,23 @@ function DataGenerationForm({
 
         <section className='advanced'>
           <div>
-            <label htmlFor='temperature'>Temperature</label>
-            <input
-              type='range'
-              id='temperature'
-              min='0'
-              max='1'
-              step='0.01'
-              {...register('parameters.temperature', {
-                disabled: isGenerating,
-              })}
-            />
+            <label htmlFor='temperature'>
+              Temperature ({temperatureValue})
+            </label>
+            <div className='slider-container'>
+              <span>0</span>
+              <input
+                type='range'
+                id='temperature'
+                min='0'
+                max='1'
+                step='0.01'
+                {...register('parameters.temperature', {
+                  disabled: isGenerating,
+                })}
+              />
+              <span>1</span>
+            </div>
             {errors.parameters?.temperature && (
               <span className='error-message'>
                 {errors.parameters?.temperature.message}

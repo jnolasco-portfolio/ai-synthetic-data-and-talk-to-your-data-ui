@@ -2,31 +2,34 @@ import { useState, useEffect } from 'react';
 import type { LearnDatabaseResponse } from '../services/dataGenerationService';
 
 interface DataPreviewProps {
-  schema: LearnDatabaseResponse;
+  schema: LearnDatabaseResponse | null;
   generatedData: Record<string, string[]>;
+  isDisabled?: boolean;
 }
 
-const DataPreview = ({ schema, generatedData }: DataPreviewProps) => {
+const DataPreview = ({
+  schema,
+  generatedData,
+  isDisabled = false,
+}: DataPreviewProps) => {
   // State to keep track of the currently selected table name
   const [selectedTable, setSelectedTable] = useState<string>('');
 
   // When the schema from the API changes, default to selecting the first table
   useEffect(() => {
-    if (schema && schema.tables.length > 0) {
+    if (schema?.tables && schema.tables.length > 0) {
       setSelectedTable(schema.tables[0].name);
     }
   }, [schema]);
 
   // Find the full table object based on the selected name
-  const tableToDisplay = schema.tables.find((t) => t.name === selectedTable);
+  const tableToDisplay = schema?.tables.find((t) => t.name === selectedTable);
   const dataToDisplay = generatedData[selectedTable] || [];
 
-  if (!schema) {
-    return <div>No schema available to display.</div>;
-  }
+  const containerClasses = isDisabled ? 'disabled' : '';
 
   return (
-    <section>
+    <section aria-disabled={isDisabled} className={containerClasses}>
       <div className='preview-selector-group'>
         <label htmlFor='table-select' className='block'>
           Data Preview
@@ -37,8 +40,10 @@ const DataPreview = ({ schema, generatedData }: DataPreviewProps) => {
           className='flex-1'
           value={selectedTable}
           onChange={(e) => setSelectedTable(e.target.value)}
+          disabled={isDisabled || !schema?.tables.length}
         >
-          {schema.tables.map((table) => (
+          <option value=''>Select a table...</option>
+          {schema?.tables.map((table) => (
             <option key={table.name} value={table.name}>
               {table.name}
             </option>
@@ -46,8 +51,23 @@ const DataPreview = ({ schema, generatedData }: DataPreviewProps) => {
         </select>
       </div>
 
+      <form>
+        <input
+          type='text'
+          id='instructions'
+          placeholder='Enter quick instructions...'
+          disabled={isDisabled || !selectedTable}
+        />
+        <button type='submit' disabled={isDisabled || !selectedTable}>
+          Submit
+        </button>
+      </form>
+
+      {!schema && !isDisabled && (
+        <p>Upload a schema and generate data to see the preview.</p>
+      )}
       {/* If a table is found, display its columns and data */}
-      {tableToDisplay && (
+      {tableToDisplay && dataToDisplay.length > 0 && (
         <table>
           <thead>
             <tr>
@@ -68,6 +88,11 @@ const DataPreview = ({ schema, generatedData }: DataPreviewProps) => {
             ))}
           </tbody>
         </table>
+      )}
+      {tableToDisplay && dataToDisplay.length === 0 && !isDisabled && (
+        <p>
+          Data for table "{tableToDisplay.name}" has not been generated yet.
+        </p>
       )}
     </section>
   );

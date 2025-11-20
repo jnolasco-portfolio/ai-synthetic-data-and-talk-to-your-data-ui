@@ -126,10 +126,13 @@ export const DataGenerationScreen = () => {
           </div>
         )}
 
-        {/* Only show the DataPreview component when generation is complete and not loading */}
-        {!isLoading && Object.keys(generatedData).length > 0 && schema && (
-          <DataPreview schema={schema} generatedData={generatedData} />
-        )}
+        {/* DataPreview is always visible. It will be disabled during loading
+            and will show its own placeholder content until data is ready. */}
+        <DataPreview
+          schema={schema}
+          generatedData={generatedData}
+          isDisabled={isLoading}
+        />
       </section>
     </>
   );

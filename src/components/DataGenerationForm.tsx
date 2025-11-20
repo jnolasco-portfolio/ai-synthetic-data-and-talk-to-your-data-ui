@@ -1,12 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type UseFormGetValues } from 'react-hook-form';
 
 import { learnDatabaseRequestSchema } from '../schemas/learnDatabaseRequest';
 import type { LearnDatabaseRequest } from '../services/dataGenerationService';
 
 interface DataGenerationFormProps {
-  onGenerate: (data: LearnDatabaseRequest) => void;
+  onGenerate: (
+    data: LearnDatabaseRequest,
+    getValues: UseFormGetValues<LearnDatabaseRequest>
+  ) => void;
   isGenerating: boolean;
 }
 
@@ -19,6 +22,7 @@ function DataGenerationForm({
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<LearnDatabaseRequest>({
     resolver: zodResolver(learnDatabaseRequestSchema),
@@ -43,7 +47,7 @@ function DataGenerationForm({
   }, [schemaFile, setValue]);
 
   const onSubmit = (data: LearnDatabaseRequest) => {
-    onGenerate(data);
+    onGenerate(data, getValues);
   };
 
   return (

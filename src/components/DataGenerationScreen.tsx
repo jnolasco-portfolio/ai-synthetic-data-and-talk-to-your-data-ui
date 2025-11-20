@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
 import { useGenerateData } from '../hooks/useGenerateData';
+import { useEffect, useRef, useState } from 'react';
 import { useLearnDatabase } from '../hooks/useLearnDatabase';
 import type {
   LearnDatabaseRequest,
   LearnDatabaseResponse,
 } from '../services/dataGenerationService';
 import DataGenerationForm from './DataGenerationForm';
+
 import DataPreview from './DataPreview';
 import LoadingOverlay from './LoadingOverlay';
+import type { UseFormGetValues } from 'react-hook-form';
 
 export const DataGenerationScreen = () => {
   // State to hold the schema structure from the /learn endpoint
-  const [schema, setSchema] = useState<LearnDatabaseResponse | null>(null);
-  // State to hold the generated data from the /generate endpoint
   const [generatedData, setGeneratedData] = useState<Record<string, string[]>>(
     {}
   );
@@ -22,6 +22,13 @@ export const DataGenerationScreen = () => {
   const [currentTable, setCurrentTable] = useState<string | null>(null);
   // State to track the progress of the initial generation
   const [progress, setProgress] = useState(0);
+  // A ref to hold the schema to avoid re-renders triggering effects
+  const schemaRef = useRef<LearnDatabaseResponse | null>(null);
+
+  // Ref to store the getValues function from react-hook-form
+  const getFormValues = useRef<UseFormGetValues<LearnDatabaseRequest> | null>(
+    null
+  );
 
   // React Query hooks for our API calls
   const learnDatabase = useLearnDatabase();
@@ -29,22 +36,18 @@ export const DataGenerationScreen = () => {
 
   // This effect runs when the /learn API call is successful
   useEffect(() => {
-    if (learnDatabase.data) {
-      console.log('Schema learned successfully. Preparing to generate data...');
-      setSchema(learnDatabase.data);
-    }
-  }, [learnDatabase.data]);
+    // Only run if we have new data from the /learn endpoint
+    if (learnDatabase.data && learnDatabase.data !== schemaRef.current) {
+      schemaRef.current = learnDatabase.data; // Store the new schema
+      const currentSchema = learnDatabase.data;
 
-  // This effect runs when the `schema` state is updated
-  useEffect(() => {
-    if (schema) {
       const generateDataForTables = async () => {
         console.log('Starting data generation for all tables...');
         setIsGenerating(true);
         const allGeneratedData: Record<string, string[]> = {};
 
         // Loop through each table defined in the schema
-        for (const [index, table] of schema.tables.entries()) {
+        for (const [index, table] of currentSchema.tables.entries()) {
           try {
             console.log(`Generating data for table: ${table.name}`);
             setCurrentTable(table.name); // Set the current table name for the UI
@@ -52,9 +55,11 @@ export const DataGenerationScreen = () => {
             const response = await generateData.mutateAsync({
               conversationId: '12345', // This can be dynamic later
               tableName: table.name,
-              instructions: 'Generate data based on the schema.', // This can be from user input later
+              instructions:
+                getFormValues.current?.('parameters.prompt') ||
+                'Generate data based on the schema.',
               maxRows: 10, // This can be from user input later
-              schema: schema,
+              schema: currentSchema,
             });
 
             // Store the results in our accumulator object
@@ -63,7 +68,8 @@ export const DataGenerationScreen = () => {
             }
 
             // Update progress
-            const percentComplete = ((index + 1) / schema.tables.length) * 100;
+            const percentComplete =
+              ((index + 1) / currentSchema.tables.length) * 100;
             setProgress(percentComplete);
           } catch (error) {
             console.error(
@@ -82,10 +88,14 @@ export const DataGenerationScreen = () => {
 
       generateDataForTables();
     }
-  }, [schema]); // Dependency: this effect runs when `schema` changes
+  }, [learnDatabase.data, generateData]);
 
   // This function is called when the user submits the form
-  const handleGenerate = (request: LearnDatabaseRequest) => {
+  const handleGenerate = (
+    request: LearnDatabaseRequest,
+    getValues: UseFormGetValues<LearnDatabaseRequest>
+  ) => {
+    getFormValues.current = getValues; // Store the getValues function in the ref
     console.log('Initiating schema learning...');
     const formData = new FormData();
     formData.append('conversationId', request.conversationId);
@@ -111,7 +121,7 @@ export const DataGenerationScreen = () => {
     tableName: string;
     instructions: string;
   }) => {
-    if (!schema) return;
+    if (!schemaRef.current) return;
 
     console.log(`Refining data for table: ${tableName}...`);
     setIsGenerating(true); // Show loading state
@@ -123,7 +133,7 @@ export const DataGenerationScreen = () => {
         tableName,
         instructions,
         maxRows: 10, // Or get this from form state
-        schema,
+        schema: schemaRef.current,
       });
 
       // Update the state with the new data for the specific table
@@ -175,7 +185,7 @@ export const DataGenerationScreen = () => {
         {/* DataPreview is always visible. It will be disabled during loading
             and will show its own placeholder content until data is ready. */}
         <DataPreview
-          schema={schema}
+          schema={schemaRef.current}
           generatedData={generatedData}
           isDisabled={isLoading}
           onRefine={handleRefine}

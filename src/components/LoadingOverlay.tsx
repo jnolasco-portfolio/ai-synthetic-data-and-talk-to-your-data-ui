@@ -13,7 +13,7 @@ interface LoadingOverlayProps {
 
 const LoadingOverlay = ({ message, progress }: LoadingOverlayProps) => {
   return (
-    <div className='overlay-container' aria-live='polite' aria-busy='true'>
+    <div className='overlay-container' aria-live='polite'>
       <article className='overlay-content'>
         <span aria-busy='true'>{message}</span>
         {progress !== undefined && progress > 0 && (

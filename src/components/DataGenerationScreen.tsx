@@ -1,17 +1,123 @@
+import { useEffect, useState } from 'react';
+import { useLearnDatabase } from '../hooks/useLearnDatabase';
+import { useGenerateData } from '../hooks/useGenerateData';
+import type {
+  LearnDatabaseRequest,
+  LearnDatabaseResponse,
+} from '../services/dataGenerationService';
 import DataGenerationForm from './DataGenerationForm';
 import DataPreview from './DataPreview';
 
 export const DataGenerationScreen = () => {
+  // State to hold the schema structure from the /learn endpoint
+  const [schema, setSchema] = useState<LearnDatabaseResponse | null>(null);
+  // State to hold the generated data from the /generate endpoint
+  const [generatedData, setGeneratedData] = useState<Record<string, string[]>>(
+    {}
+  );
+  // State to track the secondary generation process
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // React Query hooks for our API calls
+  const learnDatabase = useLearnDatabase();
+  const generateData = useGenerateData();
+
+  // This effect runs when the /learn API call is successful
+  useEffect(() => {
+    if (learnDatabase.data) {
+      console.log('Schema learned successfully. Preparing to generate data...');
+      setSchema(learnDatabase.data);
+    }
+  }, [learnDatabase.data]);
+
+  // This effect runs when the `schema` state is updated
+  useEffect(() => {
+    if (schema) {
+      const generateDataForTables = async () => {
+        console.log('Starting data generation for all tables...');
+        setIsGenerating(true);
+        const allGeneratedData: Record<string, string[]> = {};
+
+        // Loop through each table defined in the schema
+        for (const table of schema.tables) {
+          try {
+            console.log(`Generating data for table: ${table.name}`);
+            // Call the /generate endpoint for the current table
+            const response = await generateData.mutateAsync({
+              conversationId: '12345', // This can be dynamic later
+              tableName: table.name,
+              instructions: 'Generate data based on the schema.', // This can be from user input later
+              maxRows: 10, // This can be from user input later
+              schema: schema,
+            });
+
+            // Store the results in our accumulator object
+            if (response) {
+              allGeneratedData[response.tableName] = response.data;
+            }
+          } catch (error) {
+            console.error(
+              `Error generating data for table ${table.name}:`,
+              error
+            );
+          }
+        }
+
+        console.log('All data generation complete.');
+        setGeneratedData(allGeneratedData);
+        setIsGenerating(false);
+      };
+
+      generateDataForTables();
+    }
+  }, [schema]); // Dependency: this effect runs when `schema` changes
+
+  // This function is called when the user submits the form
+  const handleGenerate = (request: LearnDatabaseRequest) => {
+    console.log('Initiating schema learning...');
+    const formData = new FormData();
+    formData.append('conversationId', request.conversationId);
+    if (request.parameters.prompt) {
+      formData.append('prompt', request.parameters.prompt);
+    }
+    formData.append('temperature', request.parameters.temperature.toString());
+    formData.append('maxRows', request.parameters.maxRows.toString());
+
+    if (request.schemaUpload && request.schemaUpload.length > 0) {
+      const file = request.schemaUpload[0];
+      // The backend expects the file to be named 'file'
+      formData.append('file', file);
+      formData.append('schemaFileName', file.name);
+    }
+
+    learnDatabase.mutate(formData);
+  };
+
+  // Combine loading states for the UI
+  const isLoading = learnDatabase.isPending || isGenerating;
+
   return (
     <>
       <section>
-        <DataGenerationForm />
+        <DataGenerationForm
+          onGenerate={handleGenerate}
+          isGenerating={isLoading}
+        />
       </section>
 
       <hr />
 
       <section className='datapreview'>
-        <DataPreview />
+        {isLoading && <div>Loading...</div>}
+        {learnDatabase.error && (
+          <div className='error-message'>
+            Error: {learnDatabase.error.message}
+          </div>
+        )}
+        {/* Pass both schema and generatedData to the preview component */}
+        {schema && (
+          <DataPreview schema={schema} generatedData={generatedData} />
+        )}
       </section>
     </>
   );

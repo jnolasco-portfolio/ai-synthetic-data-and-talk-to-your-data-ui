@@ -1,54 +1,74 @@
-const DataPreview = () => {
+import { useState, useEffect } from 'react';
+import type { LearnDatabaseResponse } from '../services/dataGenerationService';
+
+interface DataPreviewProps {
+  schema: LearnDatabaseResponse;
+  generatedData: Record<string, string[]>;
+}
+
+const DataPreview = ({ schema, generatedData }: DataPreviewProps) => {
+  // State to keep track of the currently selected table name
+  const [selectedTable, setSelectedTable] = useState<string>('');
+
+  // When the schema from the API changes, default to selecting the first table
+  useEffect(() => {
+    if (schema && schema.tables.length > 0) {
+      setSelectedTable(schema.tables[0].name);
+    }
+  }, [schema]);
+
+  // Find the full table object based on the selected name
+  const tableToDisplay = schema.tables.find((t) => t.name === selectedTable);
+  const dataToDisplay = generatedData[selectedTable] || [];
+
+  if (!schema) {
+    return <div>No schema available to display.</div>;
+  }
+
   return (
     <section>
       <div className='preview-selector-group'>
-        <label htmlFor='table' className='block'>
+        <label htmlFor='table-select' className='block'>
           Data Preview
         </label>
-        <select name='table' id='table' className='flex-1'>
-          <option value='table1'>Table 1</option>
-          <option value='table2'>Table 2</option>
-          <option value='table3'>Table 3</option>
+        <select
+          name='table'
+          id='table-select'
+          className='flex-1'
+          value={selectedTable}
+          onChange={(e) => setSelectedTable(e.target.value)}
+        >
+          {schema.tables.map((table) => (
+            <option key={table.name} value={table.name}>
+              {table.name}
+            </option>
+          ))}
         </select>
       </div>
-      <form>
-        <input
-          type='text'
-          id='instructions'
-          placeholder='Enter quick instructions...'
-        />
-        <button type='submit'>Submit</button>
-      </form>
-      <table>
-        <thead>
-          <tr>
-            <th scope='col'>ID</th>
-            <th scope='col'>Name</th>
-            <th scope='col'>Category</th>
-            <th scope='col'>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>001</td>
-            <td>Sample Data 1</td>
-            <td>Category A</td>
-            <td>245.50</td>
-          </tr>
-          <tr>
-            <td>002</td>
-            <td>Sample Data 2</td>
-            <td>Category B</td>
-            <td>127.80</td>
-          </tr>
-          <tr>
-            <td>003</td>
-            <td>Sample Data 3</td>
-            <td>Category A</td>
-            <td>389.20</td>
-          </tr>
-        </tbody>
-      </table>
+
+      {/* If a table is found, display its columns and data */}
+      {tableToDisplay && (
+        <table>
+          <thead>
+            <tr>
+              {tableToDisplay.columns.map((column) => (
+                <th scope='col' key={column.name}>
+                  {column.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {dataToDisplay.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.split(',').map((cell, cellIndex) => (
+                  <td key={cellIndex}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </section>
   );
 };

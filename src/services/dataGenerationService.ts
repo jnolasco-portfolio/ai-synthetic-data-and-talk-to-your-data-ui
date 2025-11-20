@@ -1,15 +1,14 @@
 import * as z from 'zod';
 import type { generateDataRequestSchema } from '../schemas/generateDataRequest';
-import { httpClient } from './httpClient';
 import { generateDataResponseSchema } from '../schemas/generateDataResponse';
-import { learnDatabaseResponseSchema } from '../schemas/learnDatabaseResponse';
 import type { learnDatabaseRequestSchema } from '../schemas/learnDatabaseRequest';
+import { learnDatabaseResponseSchema } from '../schemas/learnDatabaseResponse';
+import { httpClient } from './httpClient';
 
 export type GenerateDataRequest = z.infer<typeof generateDataRequestSchema>;
 export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;
 export type LearnDatabaseRequest = z.infer<typeof learnDatabaseRequestSchema>;
 export type LearnDatabaseResponse = z.infer<typeof learnDatabaseResponseSchema>;
-
 class DataGenerationService {
 
   /**

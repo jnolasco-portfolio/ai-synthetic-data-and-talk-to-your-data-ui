@@ -3,7 +3,7 @@ import dataGenerationService from '../services/dataGenerationService';
 
 export const useLearnDatabase = () => {
   return useMutation({
-    mutationFn: (formData: FormData) => dataGenerationService.postLearnSchemaClient(formData),
+    mutationFn: (formData: FormData) => dataGenerationService.fetchDatabaseLearnings(formData),
     onSuccess: (response) => {
       console.log('Schema learning successful:', response);
       // You can add state updates or notifications here

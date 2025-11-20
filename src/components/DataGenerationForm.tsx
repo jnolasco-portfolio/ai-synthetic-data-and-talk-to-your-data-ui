@@ -1,14 +1,19 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
-import {
-  learnDatabaseRequestSchema,
-  type LearnDatabaseRequest,
-} from '../schemas/learnDatabaseRequest';
-import { useLearnDatabase } from '../hooks/useLearnDatabase';
+import { learnDatabaseRequestSchema } from '../schemas/learnDatabaseRequest';
+import type { LearnDatabaseRequest } from '../services/dataGenerationService';
 
-function DataGenerationForm() {
+interface DataGenerationFormProps {
+  onGenerate: (data: LearnDatabaseRequest) => void;
+  isGenerating: boolean;
+}
+
+function DataGenerationForm({
+  onGenerate,
+  isGenerating,
+}: DataGenerationFormProps) {
   const {
     register,
     handleSubmit,
@@ -27,7 +32,6 @@ function DataGenerationForm() {
   });
 
   const schemaFile = watch('schemaUpload');
-  const { mutate, isPending } = useLearnDatabase();
 
   useEffect(() => {
     if (schemaFile && schemaFile.length > 0) {
@@ -37,23 +41,8 @@ function DataGenerationForm() {
     }
   }, [schemaFile, setValue]);
 
-  // TODO: STILL best submit button or onClick event?
   const onSubmit = (data: LearnDatabaseRequest) => {
-    console.log('onSubmit', data);
-    const formData = new FormData();
-    formData.append('conversationId', data.conversationId);
-    formData.append('prompt', data.parameters.prompt);
-    formData.append('temperature', data.parameters.temperature.toString());
-    formData.append('maxRows', data.parameters.maxRows.toString());
-
-    // TODO: STILL necessary?
-    if (data.schemaUpload && data.schemaUpload.length > 0) {
-      const file = data.schemaUpload[0];
-      formData.append('schemaUpload', file);
-      formData.append('schemaFileName', file.name);
-    }
-
-    mutate(formData);
+    onGenerate(data);
   };
 
   return (
@@ -129,10 +118,11 @@ function DataGenerationForm() {
           </div>
         </section>
       </fieldset>
-      <button type='submit' disabled={isPending}>
-        {isPending ? 'Generating...' : 'Generate'}
+      <button type='submit' disabled={isGenerating}>
+        {isGenerating ? 'Generating...' : 'Generate'}
       </button>
-      <span>{console.log('Current errors:', errors)}</span> {/* Debugging */}
+      <span>{/*console.log('Current errors:', errors)*/}</span>{' '}
+      {/* Debugging */}
     </form>
   );
 }

@@ -53,7 +53,7 @@ function DataGenerationForm({
           type='text'
           id='prompt'
           placeholder='Enter your prompt here...'
-          {...register('parameters.prompt')}
+          {...register('parameters.prompt', { disabled: isGenerating })}
         />
         {errors.parameters?.prompt && (
           <span className='error-message'>
@@ -62,7 +62,11 @@ function DataGenerationForm({
         )}
       </div>
       <div className='upload-schema-group'>
-        <label htmlFor='schema-upload' role='button'>
+        <label
+          htmlFor='schema-upload'
+          role='button'
+          aria-disabled={isGenerating}
+        >
           Upload DDL Schema
         </label>
         <input
@@ -71,7 +75,7 @@ function DataGenerationForm({
           id='schema-upload'
           accept='.sql,.txt,.ddl'
           className='sr-only'
-          {...register('schemaUpload')}
+          {...register('schemaUpload', { disabled: isGenerating })}
         />
         <input type='hidden ' {...register('schemaFileName')}></input>
         <span>
@@ -94,7 +98,9 @@ function DataGenerationForm({
               min='0'
               max='1'
               step='0.01'
-              {...register('parameters.temperature')}
+              {...register('parameters.temperature', {
+                disabled: isGenerating,
+              })}
             />
             {errors.parameters?.temperature && (
               <span className='error-message'>
@@ -108,7 +114,7 @@ function DataGenerationForm({
             <input
               type='number'
               id='maxRows'
-              {...register('parameters.maxRows')}
+              {...register('parameters.maxRows', { disabled: isGenerating })}
             />
             {errors.parameters?.maxRows && (
               <span className='error-message'>

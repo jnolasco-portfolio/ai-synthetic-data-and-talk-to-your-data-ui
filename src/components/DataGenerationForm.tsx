@@ -52,95 +52,88 @@ function DataGenerationForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor='prompt'>Prompt</label>
-        <input
-          type='text'
-          id='prompt'
-          placeholder='Enter your prompt here...'
-          {...register('parameters.prompt', { disabled: isGenerating })}
-        />
-        {errors.parameters?.prompt && (
-          <span className='error-message'>
-            {errors.parameters?.prompt?.message} // TODO: Why
+      <fieldset disabled={isGenerating}>
+        <div>
+          <label htmlFor='prompt'>Prompt</label>
+          <input
+            type='text'
+            id='prompt'
+            placeholder='Enter your prompt here...'
+            {...register('parameters.prompt')}
+          />
+          {errors.parameters?.prompt && (
+            <span className='error-message'>
+              {errors.parameters?.prompt?.message} // TODO: Why
+            </span>
+          )}
+        </div>
+        <div className='upload-schema-group'>
+          <label htmlFor='schema-upload' role='button'>
+            Upload DDL Schema
+          </label>
+          <input
+            hidden
+            type='file'
+            id='schema-upload'
+            accept='.sql,.txt,.ddl'
+            className='sr-only'
+            {...register('schemaUpload')}
+          />
+          <input type='hidden ' {...register('schemaFileName')}></input>
+          <span>
+            {schemaFile && schemaFile.length > 0
+              ? 'Selected file: ' + schemaFile[0].name
+              : 'Supported formats: SQL.'}
+            {errors.schemaUpload?.message}
           </span>
-        )}
-      </div>
-      <div className='upload-schema-group'>
-        <label
-          htmlFor='schema-upload'
-          role='button'
-          aria-disabled={isGenerating}
-        >
-          Upload DDL Schema
-        </label>
-        <input
-          hidden
-          type='file'
-          id='schema-upload'
-          accept='.sql,.txt,.ddl'
-          className='sr-only'
-          {...register('schemaUpload', { disabled: isGenerating })}
-        />
-        <input type='hidden ' {...register('schemaFileName')}></input>
-        <span>
-          {schemaFile && schemaFile.length > 0
-            ? 'Selected file: ' + schemaFile[0].name
-            : 'Supported formats: SQL.'}
-          {errors.schemaUpload?.message}
-        </span>
-      </div>
-      <div className='mb-1'></div>
-      <fieldset>
-        <legend>Advanced Parameters</legend>
+        </div>
+        <div className='mb-1'></div>
+        <fieldset>
+          <legend>Advanced Parameters</legend>
 
-        <section className='advanced'>
-          <div>
-            <label htmlFor='temperature'>
-              Temperature ({temperatureValue})
-            </label>
-            <div className='slider-container'>
-              <span>0</span>
-              <input
-                type='range'
-                id='temperature'
-                min='0'
-                max='1'
-                step='0.01'
-                {...register('parameters.temperature', {
-                  disabled: isGenerating,
-                })}
-              />
-              <span>1</span>
+          <section className='advanced'>
+            <div>
+              <label htmlFor='temperature'>
+                Temperature ({temperatureValue})
+              </label>
+              <div className='slider-container'>
+                <span>0</span>
+                <input
+                  type='range'
+                  id='temperature'
+                  min='0'
+                  max='1'
+                  step='0.01'
+                  {...register('parameters.temperature')}
+                />
+                <span>1</span>
+              </div>
+              {errors.parameters?.temperature && (
+                <span className='error-message'>
+                  {errors.parameters?.temperature.message}
+                </span>
+              )}
             </div>
-            {errors.parameters?.temperature && (
-              <span className='error-message'>
-                {errors.parameters?.temperature.message}
-              </span>
-            )}
-          </div>
 
-          <div>
-            <label htmlFor='maxRows'>Max Rows</label>
-            <input
-              type='number'
-              id='maxRows'
-              {...register('parameters.maxRows', { disabled: isGenerating })}
-            />
-            {errors.parameters?.maxRows && (
-              <span className='error-message'>
-                {errors.parameters?.maxRows.message}
-              </span>
-            )}
-          </div>
-        </section>
+            <div>
+              <label htmlFor='maxRows'>Max Rows</label>
+              <input
+                type='number'
+                id='maxRows'
+                {...register('parameters.maxRows')}
+              />
+              {errors.parameters?.maxRows && (
+                <span className='error-message'>
+                  {errors.parameters?.maxRows.message}
+                </span>
+              )}
+            </div>
+          </section>
+        </fieldset>
+        <button type='submit' disabled={!schemaFile || schemaFile.length === 0}>
+          {isGenerating ? 'Generating...' : 'Generate'}
+        </button>
       </fieldset>
-      <button
-        type='submit'
-        disabled={isGenerating || !schemaFile || schemaFile.length === 0}
-      >
-        {isGenerating ? 'Generating...' : 'Generate'}
-      </button>
       <span>{/*console.log('Current errors:', errors)*/}</span>{' '}
       {/* Debugging */}
     </form>

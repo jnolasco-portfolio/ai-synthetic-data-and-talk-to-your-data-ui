@@ -102,6 +102,9 @@ section label {
   justify-content: space-between;
   align-items: center;
 }
+.preview-selector-group select {
+  margin-bottom: 0;
+}
 
 /* Utilities */
 

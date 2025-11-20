@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { LearnDatabaseResponse } from '../services/dataGenerationService';
+import JSZip from 'jszip';
 import QuickInstructionForm from './QuickInstructionForm';
 
 interface DataPreviewProps {
@@ -34,6 +35,34 @@ const DataPreview = ({
 
   const containerClasses = isDisabled ? 'disabled' : '';
 
+  const handleDownloadAll = async () => {
+    if (Object.keys(generatedData).length === 0) return;
+
+    const zip = new JSZip();
+
+    // Add each table's data as a .csv file to the zip
+    for (const tableName in generatedData) {
+      if (Object.prototype.hasOwnProperty.call(generatedData, tableName)) {
+        const tableData = generatedData[tableName];
+        const columnNames =
+          schema?.tables
+            .find((t) => t.name === tableName)
+            ?.columns.map((c) => c.name) || [];
+        const csvContent = [columnNames.join(','), ...tableData].join('\n');
+        zip.file(`${tableName}.csv`, csvContent);
+      }
+    }
+
+    // Generate the zip file and trigger the download
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(zipBlob);
+    link.download = 'synthetic-data.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section aria-disabled={isDisabled} className={containerClasses}>
       <div className='preview-selector-group'>
@@ -55,6 +84,13 @@ const DataPreview = ({
             </option>
           ))}
         </select>
+        <button
+          onClick={handleDownloadAll}
+          disabled={isDisabled || Object.keys(generatedData).length === 0}
+          className='outline'
+        >
+          Download All (.zip)
+        </button>
       </div>
 
       <QuickInstructionForm

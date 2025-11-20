@@ -17,6 +17,8 @@ export const DataGenerationScreen = () => {
   );
   // State to track the secondary generation process
   const [isGenerating, setIsGenerating] = useState(false);
+  // State to track the name of the table currently being generated
+  const [currentTable, setCurrentTable] = useState<string | null>(null);
 
   // React Query hooks for our API calls
   const learnDatabase = useLearnDatabase();
@@ -42,6 +44,7 @@ export const DataGenerationScreen = () => {
         for (const table of schema.tables) {
           try {
             console.log(`Generating data for table: ${table.name}`);
+            setCurrentTable(table.name); // Set the current table name for the UI
             // Call the /generate endpoint for the current table
             const response = await generateData.mutateAsync({
               conversationId: '12345', // This can be dynamic later
@@ -66,6 +69,7 @@ export const DataGenerationScreen = () => {
         console.log('All data generation complete.');
         setGeneratedData(allGeneratedData);
         setIsGenerating(false);
+        setCurrentTable(null); // Reset after completion
       };
 
       generateDataForTables();
@@ -99,21 +103,31 @@ export const DataGenerationScreen = () => {
       <section>
         <DataGenerationForm
           onGenerate={handleGenerate}
-          isGenerating={isLoading}
+          isGenerating={learnDatabase.isPending || isGenerating}
         />
       </section>
 
       <hr />
 
       <section className='datapreview'>
-        {isLoading && <div>Loading...</div>}
+        {/* Show a generic loading message during schema learning */}
+        {learnDatabase.isPending && (
+          <span aria-busy='true'>Learning schema...</span>
+        )}
+
+        {/* Show a specific message during data generation for each table */}
+        {isGenerating && currentTable && (
+          <span aria-busy='true'>Generating data for {currentTable}...</span>
+        )}
+
         {learnDatabase.error && (
           <div className='error-message'>
             Error: {learnDatabase.error.message}
           </div>
         )}
-        {/* Pass both schema and generatedData to the preview component */}
-        {schema && (
+
+        {/* Only show the DataPreview component when generation is complete and not loading */}
+        {!isLoading && Object.keys(generatedData).length > 0 && schema && (
           <DataPreview schema={schema} generatedData={generatedData} />
         )}
       </section>

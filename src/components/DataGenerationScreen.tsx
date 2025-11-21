@@ -58,7 +58,7 @@ export const DataGenerationScreen = () => {
               instructions:
                 getFormValues.current?.('parameters.prompt') ||
                 'Generate data based on the schema.',
-              maxRows: 10, // This can be from user input later
+              maxRows: getFormValues.current?.('parameters.maxRows') || 10,
               schema: currentSchema,
             });
 
@@ -132,7 +132,7 @@ export const DataGenerationScreen = () => {
         conversationId: '12345', // This can be dynamic later
         tableName,
         instructions,
-        maxRows: 10, // Or get this from form state
+        maxRows: getFormValues.current?.('parameters.maxRows') || 10,
         schema: schemaRef.current,
       });
 

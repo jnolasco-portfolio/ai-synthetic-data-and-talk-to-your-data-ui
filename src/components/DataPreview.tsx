@@ -50,7 +50,10 @@ const DataPreview = ({
           schema?.tables
             .find((t) => t.name === tableName)
             ?.columns.map((c) => c.name) || [];
-        const csvContent = [columnNames.join(','), ...tableData].join('\n');
+        const csvContent = [
+          columnNames.join(COLUMN_SEPARATOR),
+          ...tableData,
+        ].join('\n');
         zip.file(`${tableName}.csv`, csvContent);
       }
     }

@@ -104,7 +104,9 @@ function DataGenerationForm({
                   min='0'
                   max='1'
                   step='0.01'
-                  {...register('parameters.temperature')}
+                  {...register('parameters.temperature', {
+                    valueAsNumber: true,
+                  })}
                 />
                 <span>1</span>
               </div>
@@ -120,7 +122,7 @@ function DataGenerationForm({
               <input
                 type='number'
                 id='maxRows'
-                {...register('parameters.maxRows')}
+                {...register('parameters.maxRows', { valueAsNumber: true })}
               />
               {errors.parameters?.maxRows && (
                 <span className='error-message'>

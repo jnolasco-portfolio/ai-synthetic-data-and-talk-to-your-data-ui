@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { LearnDatabaseResponse } from '../services/dataGenerationService';
 import JSZip from 'jszip';
 import QuickInstructionForm from './QuickInstructionForm';
+import { sortTablesByDependency } from './tableSort';
 
 interface DataPreviewProps {
   schema: LearnDatabaseResponse | null;
@@ -40,23 +41,40 @@ const DataPreview = ({
   const handleDownloadAll = async () => {
     if (Object.keys(generatedData).length === 0) return;
 
+    const sortedTables = schema ? sortTablesByDependency(schema.tables) : [];
     const zip = new JSZip();
+    let loadScriptContent = '';
 
-    // Add each table's data as a .csv file to the zip
-    for (const tableName in generatedData) {
-      if (Object.prototype.hasOwnProperty.call(generatedData, tableName)) {
-        const tableData = generatedData[tableName];
-        const columnNames =
-          schema?.tables
-            .find((t) => t.name === tableName)
-            ?.columns.map((c) => c.name) || [];
+    // Loop through sorted tables to ensure correct order for CSV and SQL script
+    for (const table of sortedTables) {
+      const tableName = table.name;
+      const tableData = generatedData[tableName];
+
+      // Only process tables that have generated data
+      if (tableData) {
+        // 1. Add CSV file to zip
+        const columnNames = table.columns.map((c) => c.name);
         const csvContent = [
           columnNames.join(COLUMN_SEPARATOR),
           ...tableData,
         ].join('\n');
         zip.file(`${tableName}.csv`, csvContent);
+
+        // 2. Append commands to the SQL load script
+        loadScriptContent += `
+-- Data for ${tableName}
+TRUNCATE TABLE ${tableName};
+LOAD DATA INFILE '/path/to/your_files/${tableName}.csv'
+INTO TABLE ${tableName}
+FIELDS TERMINATED BY '${COLUMN_SEPARATOR}'
+LINES TERMINATED BY '\\n'
+IGNORE 1 LINES;
+`;
       }
     }
+
+    // Add the generated SQL script to the zip
+    zip.file('load_data.sql', loadScriptContent.trim());
 
     // Generate the zip file and trigger the download
     const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -124,7 +142,7 @@ const DataPreview = ({
             {dataToDisplay.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {row.split(COLUMN_SEPARATOR).map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell}</td>
+                  <td key={cellIndex}>{cell === '\\N' ? 'NULL' : cell}</td>
                 ))}
               </tr>
             ))}

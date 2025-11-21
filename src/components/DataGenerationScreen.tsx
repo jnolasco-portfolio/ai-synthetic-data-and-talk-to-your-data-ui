@@ -10,6 +10,7 @@ import DataGenerationForm from './DataGenerationForm';
 import DataPreview from './DataPreview';
 import LoadingOverlay from './LoadingOverlay';
 import type { UseFormGetValues } from 'react-hook-form';
+import { sortTablesByDependency } from './tableSort';
 
 export const DataGenerationScreen = () => {
   // State to hold the schema structure from the /learn endpoint
@@ -46,8 +47,11 @@ export const DataGenerationScreen = () => {
         setIsGenerating(true);
         const allGeneratedData: Record<string, string[]> = {};
 
+        // Topologically sort tables to respect foreign key constraints
+        const sortedTables = sortTablesByDependency(currentSchema.tables);
+
         // Loop through each table defined in the schema
-        for (const [index, table] of currentSchema.tables.entries()) {
+        for (const [index, table] of sortedTables.entries()) {
           try {
             console.log(`Generating data for table: ${table.name}`);
             setCurrentTable(table.name); // Set the current table name for the UI
@@ -68,8 +72,7 @@ export const DataGenerationScreen = () => {
             }
 
             // Update progress
-            const percentComplete =
-              ((index + 1) / currentSchema.tables.length) * 100;
+            const percentComplete = ((index + 1) / sortedTables.length) * 100;
             setProgress(percentComplete);
           } catch (error) {
             console.error(

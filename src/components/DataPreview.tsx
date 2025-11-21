@@ -63,12 +63,14 @@ const DataPreview = ({
         // 2. Append commands to the SQL load script
         loadScriptContent += `
 -- Data for ${tableName}
+set foreign_key_checks = 0;
 TRUNCATE TABLE ${tableName};
-LOAD DATA INFILE '/path/to/your_files/${tableName}.csv'
+LOAD DATA LOCAL INFILE './${tableName}.csv'
 INTO TABLE ${tableName}
 FIELDS TERMINATED BY '${COLUMN_SEPARATOR}'
 LINES TERMINATED BY '\\n'
 IGNORE 1 LINES;
+set foreign_key_checks = 1;
 `;
       }
     }

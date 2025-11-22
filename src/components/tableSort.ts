@@ -1,4 +1,4 @@
-import type { Table } from '../schemas/learnDatabaseResponse';
+import type { Table } from '../services/dataGenerationService';
 
 /**
  * Sorts tables based on foreign key dependencies to ensure parent tables are processed before child tables.
@@ -21,10 +21,10 @@ export const sortTablesByDependency = (tables: Table[]): Table[] => {
   // Build the graph and in-degree map
   for (const table of tables) {
     for (const fk of table.foreignKeys) {
-      // `fk.referencesTable` is the parent, `table.name` is the child.
+      // `fk.referencedTable` is the parent, `table.name` is the child.
       // The edge goes from parent to child.
-      if (adjList[fk.referencesTable]) {
-        adjList[fk.referencesTable].push(table.name);
+      if (adjList[fk.referencedTable]) {
+        adjList[fk.referencedTable].push(table.name);
         inDegree[table.name]++;
       }
     }

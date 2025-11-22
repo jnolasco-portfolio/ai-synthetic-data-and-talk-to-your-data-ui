@@ -9,6 +9,7 @@ export type GenerateDataRequest = z.infer<typeof generateDataRequestSchema>;
 export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;
 export type LearnDatabaseRequest = z.infer<typeof learnDatabaseRequestSchema>;
 export type LearnDatabaseResponse = z.infer<typeof learnDatabaseResponseSchema>;
+export type Table = LearnDatabaseResponse['tables'][number];
 class DataGenerationService {
 
   /**

@@ -1,4 +1,4 @@
-import type { Table } from '../services/dataGenerationService';
+import type { Table } from '../services/DataGenerationService';
 
 /**
  * Sorts tables based on foreign key dependencies to ensure parent tables are processed before child tables.

@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import dataGenerationService from '../services/dataGenerationService';
+import dataGenerationService from '../services/DataGenerationService';
 
 export const useLearnDatabase = () => {
   return useMutation({

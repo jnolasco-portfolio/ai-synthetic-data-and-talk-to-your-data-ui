@@ -4,7 +4,7 @@ import { useLearnDatabase } from '../hooks/useLearnDatabase';
 import type {
   LearnDatabaseRequest,
   LearnDatabaseResponse,
-} from '../services/dataGenerationService';
+} from '../services/DataGenerationService';
 import DataGenerationForm from './DataGenerationForm';
 
 import DataPreview from './DataPreview';

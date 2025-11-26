@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { LearnDatabaseResponse } from '../services/dataGenerationService';
+import type { LearnDatabaseResponse } from '../services/DataGenerationService';
 import JSZip from 'jszip';
 import QuickInstructionForm from './QuickInstructionForm';
 import { sortTablesByDependency } from './tableSort';

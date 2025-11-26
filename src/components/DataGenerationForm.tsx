@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, type UseFormGetValues } from 'react-hook-form';
 
-import { learnDatabaseRequestSchema } from '../schemas/learnDatabaseRequest';
-import type { LearnDatabaseRequest } from '../services/dataGenerationService';
+import { learnDatabaseRequestSchema } from '../schemas/LearnDatabaseRequestSchema';
+import type { LearnDatabaseRequest } from '../services/DataGenerationService';
 
 interface DataGenerationFormProps {
   onGenerate: (
@@ -63,7 +63,7 @@ function DataGenerationForm({
           />
           {errors.parameters?.prompt && (
             <span className='error-message'>
-              {errors.parameters?.prompt?.message} // TODO: Why
+              {errors.parameters?.prompt?.message}
             </span>
           )}
         </div>

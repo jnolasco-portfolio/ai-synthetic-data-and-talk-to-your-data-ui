@@ -37,7 +37,7 @@ const tableSchema = z.object({
 
 export const learnDatabaseResponseSchema = z.object({
   server: z.string(),
-  database: z.string(),
+  schemaName: z.string(),
   tables: z.array(tableSchema),
 });
 

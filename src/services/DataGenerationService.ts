@@ -1,8 +1,8 @@
 import * as z from 'zod';
-import type { generateDataRequestSchema } from '../schemas/generateDataRequest';
-import { generateDataResponseSchema } from '../schemas/generateDataResponse';
-import type { learnDatabaseRequestSchema } from '../schemas/learnDatabaseRequest';
-import { learnDatabaseResponseSchema } from '../schemas/learnDatabaseResponse';
+import type { generateDataRequestSchema } from '../schemas/GenerateDataRequestSchema';
+import { generateDataResponseSchema } from '../schemas/GenerateDataResponseSchema';
+import type { learnDatabaseRequestSchema } from '../schemas/LearnDatabaseRequestSchema';
+import { learnDatabaseResponseSchema } from '../schemas/LearnDatabaseResponseSchema';
 import { httpClient } from './httpClient';
 
 export type GenerateDataRequest = z.infer<typeof generateDataRequestSchema>;

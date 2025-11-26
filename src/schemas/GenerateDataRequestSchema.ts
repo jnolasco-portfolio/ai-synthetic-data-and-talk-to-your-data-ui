@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { learnDatabaseResponseSchema } from './learnDatabaseResponse';
+import { learnDatabaseResponseSchema } from './LearnDatabaseResponseSchema';
 
 export const generateDataRequestSchema = z.object({
   conversationId: z.string(),

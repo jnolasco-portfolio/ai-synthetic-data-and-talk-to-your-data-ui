@@ -2,13 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaArrowUp } from 'react-icons/fa';
 import {
-  QuestionFormDefaults,
-  QuestionFormSchema,
-  type QuestionFormValues,
-} from '../schemas/QuestionFormSchema';
+  QuestionRequestDefaults,
+  QuestionRequestSchema,
+  type QuestionRequest,
+} from '../schemas/QuestionRequestSchema';
 
 interface QuestionFormProps {
-  onSubmit: (data: QuestionFormValues) => void;
+  onSubmit: (data: QuestionRequest) => void;
 }
 
 function QuestionForm({ onSubmit }: QuestionFormProps) {
@@ -16,21 +16,35 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
     register,
     handleSubmit,
     watch,
+    reset, // Get the reset function
     formState: { errors, isSubmitting },
-  } = useForm<QuestionFormValues>({
-    resolver: zodResolver(QuestionFormSchema),
-    defaultValues: QuestionFormDefaults,
+  } = useForm<QuestionRequest>({
+    resolver: zodResolver(QuestionRequestSchema),
+    defaultValues: QuestionRequestDefaults,
   });
 
-  // render logic
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault(); // Prevent new line
+      if (!isSubmitting && watch('question').length > 0) {
+        handleSubmit(submitAndReset)(); // Submit the form
+      }
+    }
+  };
+
+  const submitAndReset = (data: QuestionRequest) => {
+    onSubmit(data);
+    reset(); // Reset the form after submission
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(submitAndReset)}> {/* Use the new submit handler */}
       <div className='question-group'>
         <textarea
           placeholder='Ask anything'
           maxLength={1000}
           {...register('question')}
+          onKeyDown={handleKeyDown} // Add the key down handler
         ></textarea>
         {errors.question && <span>{errors.question.message}</span>}
         <button

@@ -8,9 +8,9 @@ interface ChatHistoryProps {
 function ChatHistory({ data }: ChatHistoryProps) {
   return (
     <>
-      {data.map((item) => (
+      {data.map((item, index) => (
         <ChatHistoryItem
-          key={item.conversationId}
+          key={index}
           question={item.question}
           sqlQuery={item.sqlQuery}
           result={item.result}

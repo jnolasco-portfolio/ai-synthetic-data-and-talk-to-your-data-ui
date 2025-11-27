@@ -3,12 +3,13 @@ import type { Conversation } from '../schemas/ConversationSchema';
 interface ConversationSelectorProps {
   conversations: Conversation[];
   onConversationSelect: (conversationId: string) => void;
+  selectedConversationId: string;
 }
 
-function ConversationSelector({ conversations }: ConversationSelectorProps) {
+function ConversationSelector({ conversations, onConversationSelect, selectedConversationId }: ConversationSelectorProps) {
   return (
     <form>
-      <select>
+      <select value={selectedConversationId} onChange={(e) => onConversationSelect(e.target.value)}>
         {conversations.map((conversation) => (
           <option
             key={conversation.conversationId}

@@ -91,15 +91,6 @@ const ChatScreen = () => {
       setCurrentConversationId(conversationIdToSend);
     }
 
-    // Add user's question to chat history immediately
-    const userQuestion: QuestionResponse = {
-      conversationId: conversationIdToSend,
-      question: formData.question,
-      sqlQuery: '', // User question doesn't have SQL query or result yet
-      result: [],
-    };
-    setCurrentChatHistory((prev) => [...prev, userQuestion]);
-
     // Prepare the request for the AI
     const request: QuestionRequest = {
       ...formData,

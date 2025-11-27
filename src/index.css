@@ -52,6 +52,9 @@ section {
   border: 2px solid var(--pico-muted-border-color);
 }
 
+article {
+  border: 2px solid var(--pico-primary);
+}
 section .advanced {
   display: flex;
   justify-content: space-around;
@@ -146,6 +149,10 @@ section label {
 
 .flex {
   display: flex;
+}
+
+.mb-0_5 {
+  margin-bottom: 0.5rem;
 }
 
 .mb-1 {

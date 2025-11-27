@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { Conversation } from '../schemas/ConversationSchema';
 import type { QuestionRequest } from '../schemas/QuestionRequestSchema';
 import type { QuestionResponse } from '../schemas/QuestionResponseSchema';
@@ -24,44 +24,39 @@ const ChatScreen = () => {
   const [currentConversationId, setCurrentConversationId] =
     useState<string>('new');
 
-  const askQuestionMutation = useAskQuestion();
-
-  // Effect to handle the AI's response
-  useEffect(() => {
-    if (askQuestionMutation.isSuccess && askQuestionMutation.data) {
-      setCurrentChatHistory((prev) => [...prev, askQuestionMutation.data!]);
-      // If it was a new chat or a newly frontend-generated ID, add it to conversations
-      if (
-        currentConversationId === 'new' ||
-        !conversations.some(
-          (c) => c.conversationId === askQuestionMutation.data.conversationId
-        )
-      ) {
-        const newConvo: Conversation = {
-          conversationId: askQuestionMutation.data.conversationId,
-          name: askQuestionMutation.data.question.substring(0, 30) + '...', // First part of question as topic
-        };
-        setConversations((prev) => [...prev, newConvo]);
-        setCurrentConversationId(newConvo.conversationId);
-      }
+  const handleAskQuestionSuccess = (data: QuestionResponse) => {
+    setCurrentChatHistory((prev) => [...prev, data]);
+    // If it was a new chat or a newly frontend-generated ID, add it to conversations
+    if (
+      currentConversationId === 'new' ||
+      !conversations.some((c) => c.conversationId === data.conversationId)
+    ) {
+      const newConvo: Conversation = {
+        conversationId: data.conversationId,
+        name: data.question.substring(0, 30) + '...', // First part of question as topic
+      };
+      setConversations((prev) => [...prev, newConvo]);
+      setCurrentConversationId(newConvo.conversationId);
     }
-  }, [askQuestionMutation.isSuccess, askQuestionMutation.data, currentConversationId, conversations]);
+  };
 
-  // Effect to handle errors from the AI's response
-  useEffect(() => {
-    if (askQuestionMutation.isError) {
-      setCurrentChatHistory((prev) => [
-        ...prev,
-        {
-          conversationId: currentConversationId,
-          question: 'Error',
-          sqlQuery: 'Error occurred while fetching response.',
-          result: [],
-          error: askQuestionMutation.error?.message || 'Unknown error',
-        },
-      ]);
-    }
-  }, [askQuestionMutation.isError, askQuestionMutation.error, currentConversationId]);
+  const handleAskQuestionError = (error: Error) => {
+    setCurrentChatHistory((prev) => [
+      ...prev,
+      {
+        conversationId: currentConversationId,
+        question: 'Error',
+        sqlQuery: 'Error occurred while fetching response.',
+        result: [],
+        error: error.message || 'Unknown error',
+      },
+    ]);
+  };
+
+  const askQuestionMutation = useAskQuestion({
+    onSuccess: handleAskQuestionSuccess,
+    onError: handleAskQuestionError,
+  });
 
   const handleConversationSelect = (conversationId: string) => {
     setCurrentConversationId(conversationId);

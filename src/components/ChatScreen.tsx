@@ -8,19 +8,25 @@ import QuestionForm from './QuestionForm';
 import { useAskQuestion } from '../hooks/useAskQuestion';
 import LoadingOverlay from './LoadingOverlay';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
+import useLocalStorage from '../hooks/useLocalStorage';
+
+type ChatHistoryItem = QuestionResponse & {
+  error?: string;
+  id?: string;
+};
 
 const initialConversations: Conversation[] = [
   { conversationId: 'new', name: 'New Chat' },
-  { conversationId: 'uuid-5678', name: 'Topic 1 (Mock)' },
-  { conversationId: 'uuid-8765', name: 'Topic 2 (Mock)' },
 ];
 
 const ChatScreen = () => {
   const [currentChatHistory, setCurrentChatHistory] = useState<
-    QuestionResponse[]
+    ChatHistoryItem[]
   >([]);
-  const [conversations, setConversations] =
-    useState<Conversation[]>(initialConversations);
+  const [conversations, setConversations] = useLocalStorage(
+    'conversations',
+    initialConversations
+  );
   const [currentConversationId, setCurrentConversationId] =
     useState<string>('new');
 
@@ -29,13 +35,15 @@ const ChatScreen = () => {
     // If it was a new chat or a newly frontend-generated ID, add it to conversations
     if (
       currentConversationId === 'new' ||
-      !conversations.some((c) => c.conversationId === data.conversationId)
+      !conversations.some(
+        (c: Conversation) => c.conversationId === data.conversationId
+      )
     ) {
       const newConvo: Conversation = {
         conversationId: data.conversationId,
         name: data.question.substring(0, 30) + '...', // First part of question as topic
       };
-      setConversations((prev) => [...prev, newConvo]);
+      setConversations((prev: Conversation[]) => [...prev, newConvo]);
       setCurrentConversationId(newConvo.conversationId);
     }
   };
@@ -49,6 +57,7 @@ const ChatScreen = () => {
         sqlQuery: 'Error occurred while fetching response.',
         result: [],
         error: error.message || 'Unknown error',
+        id: uuidv4(), // Generate a unique ID
       },
     ]);
   };
@@ -72,6 +81,7 @@ const ChatScreen = () => {
           question: `Mock question for ${conversationId}`,
           sqlQuery: 'SELECT * FROM mock_table',
           result: [{ id: '1', name: 'Mock Data' }],
+          id: uuidv4(), // Generate a unique ID
         },
       ]);
     }

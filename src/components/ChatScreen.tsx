@@ -31,7 +31,14 @@ const ChatScreen = () => {
     useState<string>('new');
 
   const handleAskQuestionSuccess = (data: QuestionResponse) => {
-    setCurrentChatHistory((prev) => [...prev, data]);
+    setCurrentChatHistory((prev: ChatHistoryItem[]) => {
+      const chatHistory = [...prev, data];
+      localStorage.setItem(
+        `chat-history-${currentConversationId}`,
+        JSON.stringify(chatHistory)
+      );
+      return chatHistory;
+    });
     // If it was a new chat or a newly frontend-generated ID, add it to conversations
     if (
       currentConversationId === 'new' ||
@@ -68,23 +75,17 @@ const ChatScreen = () => {
   });
 
   const handleConversationSelect = (conversationId: string) => {
-    setCurrentConversationId(conversationId);
-    // In a real app, you would fetch the history for this conversationId
-    // For now, let's clear history for 'new' and keep mock for others or fetch
-    if (conversationId === 'new') {
-      setCurrentChatHistory([]);
+    const storedChatHistory = localStorage.getItem(
+      `chat-history-${conversationId}`
+    );
+    if (storedChatHistory) {
+      const chatHistory = JSON.parse(storedChatHistory);
+      setCurrentChatHistory(chatHistory);
     } else {
-      // Mock history for selected conversation for demonstration
-      setCurrentChatHistory([
-        {
-          conversationId: conversationId,
-          question: `Mock question for ${conversationId}`,
-          sqlQuery: 'SELECT * FROM mock_table',
-          result: [{ id: '1', name: 'Mock Data' }],
-          id: uuidv4(), // Generate a unique ID
-        },
-      ]);
+      // If no chat history is found in local storage, initialize it as an empty array
+      setCurrentChatHistory([]);
     }
+    setCurrentConversationId(conversationId);
   };
 
   const handleOnSubmitQuestion = (formData: QuestionRequest) => {

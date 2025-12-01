@@ -15,6 +15,7 @@ interface DataPreviewProps {
 }
 
 const COLUMN_SEPARATOR = '|';
+const NULL_REPRESENTATION = '\\N';
 
 const DataPreview = ({
   schema,
@@ -144,7 +145,7 @@ set foreign_key_checks = 1;
             {dataToDisplay.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {row.split(COLUMN_SEPARATOR).map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell === '\\N' ? 'NULL' : cell}</td>
+                  <td key={cellIndex}>{cell === NULL_REPRESENTATION ? 'NULL' : cell}</td>
                 ))}
               </tr>
             ))}

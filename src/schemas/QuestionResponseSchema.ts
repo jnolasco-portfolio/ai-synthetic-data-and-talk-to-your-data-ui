@@ -5,6 +5,11 @@ export const QuestionResponseSchema = z.object({
   conversationId: z.string(),
   question: z.string(),
   sqlQuery: z.string(),
+  metadata: z.object({
+    content_type: z.enum(['bar', 'pie', 'line', 'table']),
+    category_key: z.string().nullable(),
+    value_key: z.string().nullable(),
+  }),
   result: z.array(z.record(z.string(), z.any())),
 });
 

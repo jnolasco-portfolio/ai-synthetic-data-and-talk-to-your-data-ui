@@ -24,7 +24,7 @@ export default function ResultTable({ result }: ResultTableProps) {
         {result.map((row, rowIdx) => (
           <tr key={rowIdx}>
             {columns.map((col) => (
-              <td key={col}>{row[col] ?? ''}</td>
+              <td key={col}>{row[col] === null ? 'NULL' : row[col]}</td>
             ))}
           </tr>
         ))}

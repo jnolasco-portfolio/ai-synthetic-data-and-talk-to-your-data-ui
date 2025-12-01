@@ -1,18 +1,27 @@
-import ResultTable from './ResultTable';
+import type { QuestionResponse } from '../schemas/QuestionResponseSchema';
+import ChartRenderer from './charts/ChartRenderer';
 
 interface ChatHistoryItemProps {
-  question: string;
-  sqlQuery: string;
-  result: Record<string, string>[];
+  item: QuestionResponse;
 }
 
-function ChatHistoryItem({ question, sqlQuery, result }: ChatHistoryItemProps) {
+function ChatHistoryItem({ item }: ChatHistoryItemProps) {
+  const metadata = {
+    ...item.metadata,
+    category_key: item.metadata.category_key ?? '',
+    value_key: item.metadata.value_key ?? '',
+  };
+
   return (
     <article>
-      <blockquote>{question}</blockquote>
-      <code>{sqlQuery}</code>
-      <hr />
-      <ResultTable result={result} />
+      <blockquote>{item.question}</blockquote>
+      {item.sqlQuery && (
+        <>
+          <code>{item.sqlQuery}</code>
+          <hr />
+        </>
+      )}
+      <ChartRenderer data={item.result} metadata={metadata} />
     </article>
   );
 }

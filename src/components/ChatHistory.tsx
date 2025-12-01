@@ -9,12 +9,7 @@ function ChatHistory({ data }: ChatHistoryProps) {
   return (
     <>
       {data.map((item) => (
-        <ChatHistoryItem
-          key={item.id}
-          question={item.question}
-          sqlQuery={item.sqlQuery}
-          result={item.result}
-        />
+        <ChatHistoryItem key={item.id} item={item} />
       ))}
     </>
   );

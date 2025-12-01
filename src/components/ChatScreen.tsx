@@ -63,6 +63,11 @@ const ChatScreen = () => {
         question: 'Error',
         sqlQuery: 'Error occurred while fetching response.',
         result: [],
+        metadata: {
+          content_type: 'table', // Default to table or a suitable fallback
+          category_key: null,
+          value_key: null,
+        },
         error: error.message || 'Unknown error',
         id: uuidv4(), // Generate a unique ID
       },

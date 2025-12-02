@@ -12,7 +12,7 @@ const NULL_REPRESENTATION = '\\N';
  * @param rawResult The raw string from the API.
  * @returns An array of objects, or an empty array if the input is invalid.
  */
-const parseResult = (rawResult: any): Record<string, string | null>[] => {
+const parseResult = (rawResult: string): Record<string, string | null>[] => {
   if (typeof rawResult !== 'string' || !rawResult.trim()) {
     return [];
   }

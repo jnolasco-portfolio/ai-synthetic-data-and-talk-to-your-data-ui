@@ -7,3 +7,4 @@ export const generateDataResponseSchema = z.object({
 });
 
 
+export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;

@@ -9,3 +9,4 @@ export const generateDataRequestSchema = z.object({
   schema: learnDatabaseResponseSchema,
 });
 
+export type GenerateDataRequest = z.infer<typeof generateDataRequestSchema>;

@@ -1,6 +1,7 @@
 import type { QuestionRequest } from '../schemas/QuestionRequestSchema';
 import type { QuestionResponse } from '../schemas/QuestionResponseSchema';
-import { httpClient } from './httpClient';
+import { talkToYourDataHttpClient } from './httpClient';
+
 
 const COLUMN_SEPARATOR = '|';
 const NULL_REPRESENTATION = '\\N';
@@ -60,7 +61,7 @@ const parseHtmlResult = (html: string): Record<string, string>[] => {
 export const askQuestion = async (
   request: QuestionRequest
 ): Promise<QuestionResponse> => {
-  const { data } = await httpClient.post('/questions', request);
+  const { data } = await talkToYourDataHttpClient.post('/questions', request);
 
   // Check if the response is a string (HTML) or an object (JSON)
   if (typeof data === 'string') {

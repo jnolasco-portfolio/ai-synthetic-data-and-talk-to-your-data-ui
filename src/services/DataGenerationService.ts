@@ -3,7 +3,7 @@ import type { generateDataRequestSchema } from '../schemas/GenerateDataRequestSc
 import { generateDataResponseSchema } from '../schemas/GenerateDataResponseSchema';
 import type { learnDatabaseRequestSchema } from '../schemas/LearnDatabaseRequestSchema';
 import { learnDatabaseResponseSchema } from '../schemas/LearnDatabaseResponseSchema';
-import { httpClient } from './httpClient';
+import { schemaAssistantHttpClient, talkToYourDataHttpClient } from './httpClient';
 
 export type GenerateDataRequest = z.infer<typeof generateDataRequestSchema>;
 export type GenerateDataResponse = z.infer<typeof generateDataResponseSchema>;
@@ -18,7 +18,7 @@ class DataGenerationService {
   async fetchDatabaseLearnings(
     formData: FormData
   ): Promise<LearnDatabaseResponse> {
-    const { data } = await httpClient.post<LearnDatabaseResponse>(
+    const { data } = await schemaAssistantHttpClient.post<LearnDatabaseResponse>(
       '/learn',
       formData,
       {
@@ -41,7 +41,7 @@ class DataGenerationService {
   async fetchGeneratedData(
     request: GenerateDataRequest
   ): Promise<GenerateDataResponse> {
-    const { data } = await httpClient.post<GenerateDataResponse>(
+    const { data } = await talkToYourDataHttpClient.post<GenerateDataResponse>(
       '/generate',
       request,
       {

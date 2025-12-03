@@ -41,7 +41,7 @@ class DataGenerationService {
   async fetchGeneratedData(
     request: GenerateDataRequest
   ): Promise<GenerateDataResponse> {
-    const { data } = await talkToYourDataHttpClient.post<GenerateDataResponse>(
+    const { data } = await schemaAssistantHttpClient.post<GenerateDataResponse>(
       '/generate',
       request,
       {

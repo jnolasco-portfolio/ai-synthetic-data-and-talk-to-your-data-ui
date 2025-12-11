@@ -1,0 +1,10 @@
+How is the oldest author?
+
+Show me top 5 lended genres in a pie chart
+
+Show me the trends of books lending
+
+what is stephen king's nationality?
+
+Show me top 5 author's contries;
+

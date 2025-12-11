@@ -9,12 +9,14 @@ interface AppLayoutProps {
 // AppLayout.tsx (Updated return)
 export const AppLayout = ({ children }: AppLayoutProps) => {
   return (
-    <div className="container-grid">
+    <div className='container-grid'>
       <aside>
         <Sidebar />
       </aside>
       <main>{children}</main>
-      <footer>Course: Prompt Engineering & AI Applications</footer>
+      <footer>
+        2025, Prompt Engineering & AI Applications Capstone Project
+      </footer>
     </div>
   );
 };
